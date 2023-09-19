@@ -1,0 +1,6 @@
+mangum
+numpy==1.25.0
+packaging==23.1
+pandas==2.0.2
+pytest==7.4.0
+cassandra-driver==3.25.0
