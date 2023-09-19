@@ -1,0 +1,13 @@
+<<<<<<< Updated upstream
+venv/*
+./venv/*
+/venv/lib
+/venv/bin
+
+=======
+../venv/*
+venv/
+venv/bin
+venv/lib/*
+/venv/
+>>>>>>> Stashed changes
