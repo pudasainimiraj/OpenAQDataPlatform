@@ -4,7 +4,6 @@ from cassandra.cqlengine import columns, connection, ValidationError
 from cassandra.cqlengine.management import sync_table
 from cassandra.cqlengine.models import Model
 from uuid import uuid4
-import re
 
 
 """_ORM for database_
