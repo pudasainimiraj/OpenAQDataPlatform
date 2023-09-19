@@ -3,6 +3,9 @@ from OpenAQDataPlatform.app.repostiories.abstract_repository import AbstractRepo
 
 
 class MesurementRepository(AbstractRepository):
+    
+    """The method needs implementation
+    """
     def __init__(self) -> None:
         super().__init__()
         

@@ -3,7 +3,11 @@ from OpenAQDataPlatform.app.repostiories.abstract_repository import AbstractRepo
 
 
 class SourceRepository(AbstractRepository):
-    
+    """All the methods needs implementation
+
+    Args:
+        AbstractRepository (_type_): _description_
+    """
     def __init__(self) -> None:
         super().__init__()
         

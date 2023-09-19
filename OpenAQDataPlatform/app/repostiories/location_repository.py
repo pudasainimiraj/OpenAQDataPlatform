@@ -5,7 +5,8 @@ from OpenAQDataPlatform.app.repostiories.abstract_repository import AbstractRepo
 from OpenAQDataPlatform.app.models.orm import Location, Mesurement, Source
 class LocationRepository(AbstractRepository):
     
-    
+    """The methods needs implementation
+    """
     def __init__(self):
         pass
     
