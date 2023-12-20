@@ -1,14 +1,18 @@
 import abc
+import os
 from typing import Union
+from dotenv import load_dotenv
+from OpenAQDataPlatform.app.repostiories.abstract_repository import BaseRepository
+from sqlalchemy import create_engine
+from sqlalchemy.orm import sessionmaker, Session
 
-from OpenAQDataPlatform.app.repostiories.abstract_repository import AbstractRepository
-from OpenAQDataPlatform.app.repostiories.location_repository import LocationRepository
-from OpenAQDataPlatform.app.repostiories.source_repository import SourceRepository
+load_dotenv()
 
+TSDB_URI = os.getenv("TSDB_URI")
 
-class AbstractUnitOfWork(abc.ABC):
+class AbstractUOW(abc.ABC):
     def __init__(self)->None:
-        self.repo_instance:Union[AbstractRepository,LocationRepository, SourceRepository]
+        self.repo_instance:Union[BaseRepository, None] = None
         super().__init__()
         
     def __enter__(self)-> "AbstractUnitOfWork":
@@ -26,4 +30,24 @@ class AbstractUnitOfWork(abc.ABC):
     
     @abc.abstractmethod
     def rollback(self):
-        pass            
+        pass
+
+class UnitOfWork(AbstractUOW):
+    def __init__(self, repo_instance:BaseRepository)->None:
+        self.repo_instance = repo_instance
+        self._session = sessionmaker(
+                            bind=create_engine(TSDB_URI, isolation_level="READ COMMITTED", echo=True)
+                        )
+        super().__init__()
+
+    def commit(self):
+        try:
+            self._session.commit()
+        except Exception as e:
+            self.rollback()
+            raise e
+            
+        
+    def rollback(self):
+        self._session.rollback()
+    
