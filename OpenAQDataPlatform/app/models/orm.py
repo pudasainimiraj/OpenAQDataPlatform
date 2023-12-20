@@ -1,3 +1,4 @@
+import re
 from sqlalchemy import (
     Boolean,
     Float,
@@ -11,6 +12,7 @@ from sqlalchemy import (
 )
 from sqlalchemy.orm import relationship, registry
 from models import Location, Measurement, Source
+
 mapper_registry = registry()
 metadata = MetaData()
 
@@ -33,8 +35,7 @@ measurement = Table(
     Column("value", Float, nullable=False),
     Column("unit", String, nullable=False),
     Column("date", DateTime, nullable=False),
-    Column("latitude", Float),
-    Column("longitude", Float),
+    Column("source_name", String, ForeignKey("source.source_name")),
 )
 
 source = Table(
@@ -49,3 +50,12 @@ source = Table(
 )
 
 Index("ix_measurement_location_id_date", measurement.c.location_id, measurement.c.date)
+mapper_registry.map_imperatively(
+    Measurement, 
+    measurement, 
+    properties={
+        "location": relationship(Location, backref="measurement"),
+        "source": relationship(Source, backref="measurement")
+    }
+)
+
