@@ -1,61 +1,46 @@
-import re
-from sqlalchemy import (
-    Boolean,
-    Float,
-    Index,
-    Table,
-    MetaData,
-    Column,
-    String,
-    ForeignKey,
-    DateTime,
-)
-from sqlalchemy.orm import relationship, registry
-from models import Location, Measurement, Source
+from itertools import count
+from sqlalchemy import create_engine, Boolean, Float, MetaData, Column, String, ForeignKey, DateTime, Integer
+from sqlalchemy.orm import declarative_base, relationship
 
-mapper_registry = registry()
+
+
+Base = declarative_base()
 metadata = MetaData()
 
-location = Table(
-    "location",
-    metadata,
-    Column("location_id", String, primary_key=True),
-    Column("location_name", String, nullable=False),
-    Column("city", String),
-    Column("country", String, nullable=False),
-    Column("latitude", Float),
-    Column("longitude", Float),
-)
+class Location(Base):
+    __tablename__ = 'location'
+    location_id = Column(String, primary_key=True)
+    location_name = Column(String, nullable=False)
+    country = Column(String, nullable=False)
+    city = Column(String)
+    latitude = Column(Float)
+    longitude = Column(Float)
+    count = Column(Integer)
+    measurements = relationship('Measurement', back_populates='location')
 
-measurement = Table(
-    "measurement",
-    metadata,
-    Column("location_id", String, ForeignKey("location.location_id")),
-    Column("parameter", String, nullable=False),
-    Column("value", Float, nullable=False),
-    Column("unit", String, nullable=False),
-    Column("date", DateTime, nullable=False),
-    Column("source_name", String, ForeignKey("source.source_name")),
-)
+class Measurement(Base):
+    __tablename__ = 'measurement'
+    location_id = Column(String, ForeignKey('location.location_id'), primary_key=True)
+    parameter = Column(String, primary_key=True)  # Part of the composite primary key
+    date = Column(DateTime, primary_key=True)  # Part of the composite primary key
+    value = Column(Float, nullable=False)
+    unit = Column(String, nullable=False)
+    source_id = Column(String, ForeignKey('source.source_id'))
+    # Relationships
+    location = relationship('Location', back_populates='measurements')
+    source = relationship('Source', back_populates='measurements')
 
-source = Table(
-    "source",
-    Column("source_name", String, primary_key=True),
-    Column("source_url", String, nullable=False),
-    Column("source_type", String, nullable=False),
-    Column("source_id", String, nullable=False),
-    Column("source_description", String),
-    Column("source_contact", String),
-    Column("source_active", Boolean),
-)
+class Source(Base):
+    __tablename__ = 'source'
+    source_name = Column(String, primary_key=True)
+    source_url = Column(String, nullable=False)
+    source_type = Column(String, nullable=False)
+    source_id = Column(String, nullable=False)
+    source_description = Column(String)
+    source_contact = Column(String)
+    source_active = Column(Boolean)
+    measurements = relationship('Measurement', back_populates='source')
 
-Index("ix_measurement_location_id_date", measurement.c.location_id, measurement.c.date)
-mapper_registry.map_imperatively(
-    Measurement, 
-    measurement, 
-    properties={
-        "location": relationship(Location, backref="measurement"),
-        "source": relationship(Source, backref="measurement")
-    }
-)
-
+# # Create engine and bind metadata
+# engine = create_engine('http://127.0.0.1:5432/')
+# metadata.create_all(engine)

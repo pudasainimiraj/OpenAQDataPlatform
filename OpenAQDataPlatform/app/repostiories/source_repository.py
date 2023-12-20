@@ -1,29 +1,22 @@
 from sqlalchemy.orm import Session
-from OpenAQDataPlatform.app.models.models import Source
-from abstract_repository import BaseRepository
+from OpenAQDataPlatform.app.models.orm import Source
+from OpenAQDataPlatform.app.repostiories.base_repository import BaseRepository
 
 class SourceRepository(BaseRepository):
     def __init__(self, session: Session):
         super().__init__(session)
 
-    def query_by_name_and_id_or_create(
-        self, name, id, **kwargs
-    ):
-        return (
-            self.session.query(Source)
-            .filter_by(source_name=name)
-            .filter_by(source_id=id)
-            .first()
-            or Source(source_name=name, source_id=id, **kwargs)
-        )
-
-    def query_by_name_or_create(self, name, **kwargs):
-        return (
-            self.session.query(Source)
-            .filter_by(source_name=name)
-            .first()
-            or Source(source_name=name, **kwargs)
-        )
+    def get_or_create_source(self,model):
+        if model.source_id == None:
+            return self.query_by_name_or_create(model.source_name)
+        
+        existing_source = self.session.query(Source).filter_by(source_id=model.source_id).first()
+        
+        if existing_source:
+            return existing_source
+        
+        self.session.add(model)
+        return model
 
     def update(self, model, **kwargs):
         self.session.query(Source).filter_by(source_id=model.source_id).update(kwargs)
