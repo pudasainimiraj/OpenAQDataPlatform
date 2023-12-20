@@ -1,21 +1,43 @@
-from OpenAQDataPlatform.app.models.orm import Source
-from OpenAQDataPlatform.app.repostiories.abstract_repository import AbstractRepository
+from sqlalchemy.orm import Session
+from OpenAQDataPlatform.app.models.models import Source
+from abstract_repository import BaseRepository
 
+class SourceRepository(BaseRepository):
+    def __init__(self, session: Session):
+        super().__init__(session)
 
-class SourceRepository(AbstractRepository):
-    """All the methods needs implementation
+    def query_by_name_and_id_or_create(
+        self, name, id, **kwargs
+    ):
+        return (
+            self.session.query(Source)
+            .filter_by(source_name=name)
+            .filter_by(source_id=id)
+            .first()
+            or Source(source_name=name, source_id=id, **kwargs)
+        )
 
-    Args:
-        AbstractRepository (_type_): _description_
-    """
-    def __init__(self) -> None:
-        super().__init__()
+    def query_by_name_or_create(self, name, **kwargs):
+        return (
+            self.session.query(Source)
+            .filter_by(source_name=name)
+            .first()
+            or Source(source_name=name, **kwargs)
+        )
+
+    def update(self, model, **kwargs):
+        self.session.query(Source).filter_by(source_id=model.source_id).update(kwargs)
+        self.session.commit()
         
-    def create_entry(self, source:Source)->str:
-        return super().create_entry()
+    def query_by_id(self, id):
+        return self.session.query(Source).filter_by(source_id=id).first()
     
-    def get(self, source:Source)->str:
-        return super().get()
+    def query_all(self):
+        return self.session.query(Source).all()
     
-    def update(self, source:Source)->str:
-        return super().get()
+    def query(self):
+        return self.session.query(Source)
+
+    def delete(self, model):
+        self.session.delete(model)
+        self.session.commit()

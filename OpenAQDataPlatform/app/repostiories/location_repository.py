@@ -1,24 +1,44 @@
-from typing import List
+from sqlalchemy.orm import Session
+from abstract_repository import BaseRepository
+from OpenAQDataPlatform.app.models.models import Location
 
-from OpenAQDataPlatform.app.repostiories.abstract_repository import AbstractRepository
+class LocationRepository(BaseRepository):
+    def __init__(self, session: Session):
+        super().__init__(session)
 
-from OpenAQDataPlatform.app.models.orm import Location, Mesurement, Source
-class LocationRepository(AbstractRepository):
+    def query_by_name_and_id_or_create(
+        self, name, id, **kwargs
+    ):
+        return (
+            self.session.query(Location)
+            .filter_by(location_name=name)
+            .filter_by(location_id=id)
+            .first()
+            or Location(location_name=name, location_id=id, **kwargs)
+        )
+
+    def query_by_name_or_create(self, name, **kwargs):
+        return (
+            self.session.query(Location)
+            .filter_by(location_name=name)
+            .first()
+            or Location(location_name=name, **kwargs)
+        )
+
+    def update(self, model, **kwargs):
+        self.session.query(Location).filter_by(location_id=model.location_id).update(kwargs)
+        self.session.commit()
+        
+    def query_by_id(self, id):
+        return self.session.query(Location).filter_by(location_id=id).first()
     
-    """The methods needs implementation
-    """
-    def __init__(self):
-        pass
+    def query_all(self):
+        return self.session.query(Location).all()
     
-    
-    def create_entry(self, location:Location):
-        return super().create_entry()
-    
-    def get(self):
-        return super().get()
-    
-    def update(self):
-        return super().update()
-    
-    def delete(self):
-        return super().delete()
+    def query(self):
+        return self.session.query(Location)
+
+    def delete(self, model):
+        self.session.delete(model)
+        self.session.commit()
+

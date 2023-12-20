@@ -1,45 +1,61 @@
-from dataclasses import dataclass
-from typing import Text
-from cassandra.cqlengine import columns, connection, ValidationError
-from cassandra.cqlengine.management import sync_table
-from cassandra.cqlengine.models import Model
-from uuid import uuid4
+import re
+from sqlalchemy import (
+    Boolean,
+    Float,
+    Index,
+    Table,
+    MetaData,
+    Column,
+    String,
+    ForeignKey,
+    DateTime,
+)
+from sqlalchemy.orm import relationship, registry
+from models import Location, Measurement, Source
 
+mapper_registry = registry()
+metadata = MetaData()
 
-"""_ORM for database_
-We do not seperately do a create table kinda orm like sql alchemy cause cassandra take in the object and makes it themslef
-"""
+location = Table(
+    "location",
+    metadata,
+    Column("location_id", String, primary_key=True),
+    Column("location_name", String, nullable=False),
+    Column("city", String),
+    Column("country", String, nullable=False),
+    Column("latitude", Float),
+    Column("longitude", Float),
+)
 
+measurement = Table(
+    "measurement",
+    metadata,
+    Column("location_id", String, ForeignKey("location.location_id")),
+    Column("parameter", String, nullable=False),
+    Column("value", Float, nullable=False),
+    Column("unit", String, nullable=False),
+    Column("date", DateTime, nullable=False),
+    Column("source_name", String, ForeignKey("source.source_name")),
+)
 
-@dataclass
-class Location(Model):
-    location_id = columns.UUID(primary_key=True, default=uuid4)
-    location= columns.Text(required=True)
-    city= columns.Text(required=True)
-    coutry=columns.Text(required=True)
-    """this needs to change to take latitude and longitute as a combined cordinates
-        or may be we could just do latitude and longitude as a different columns
-        that's tbd ....
-    """
-    cordinates=columns.Double(required=True)
+source = Table(
+    "source",
+    Column("source_name", String, primary_key=True),
+    Column("source_url", String, nullable=False),
+    Column("source_type", String, nullable=False),
+    Column("source_id", String, nullable=False),
+    Column("source_description", String),
+    Column("source_contact", String),
+    Column("source_active", Boolean),
+)
 
-@dataclass
-class Mesurement(Model):
-    mesurement_id=columns.TimeUUID(primary_key=True, default=uuid4)
-    date=columns.DateTime(required=True) #I think this can be optional or remove at all cause we are already using TimeUUID for mesurement ID
-    location_id=columns.UUID(index=True)
-    source_id=columns.UUID(index=True)
-    # value is probably going to be a multiplue column as well cause there are 4distinct type of pollutant ascoiated in
-    # the analysis database need to be able to handle that
-    value=columns.Text(required=True)
-    unit= columns.Text(required=True)
-    
-@dataclass
-class Source(Model):
-    source_id=columns.UUID(primary_key=True, default=uuid4)
-    name=columns.Text(required=True)
-    url=columns.Text()
-    
-sync_table(Location)
-sync_table(Mesurement)
-sync_table(Source)
+Index("ix_measurement_location_id_date", measurement.c.location_id, measurement.c.date)
+mapper_registry.map_imperatively(
+    Measurement, 
+    measurement, 
+    properties={
+        "location": relationship(Location, backref="measurement"),
+        "source": relationship(Source, backref="measurement")
+    }
+)
+
