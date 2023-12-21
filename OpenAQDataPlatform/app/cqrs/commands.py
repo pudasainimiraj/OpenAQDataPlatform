@@ -1,56 +1,29 @@
+from OpenAQDataPlatform.app.repostiories import source_repository, location_repository, measurement_repository
 from OpenAQDataPlatform.app.models.orm import Source, Location, Measurement
-from OpenAQDataPlatform.app.unit_of_work.abstract_uow import UnitOfWork
-from OpenAQDataPlatform.app.repostiories import (
-    SourceRepository,
-    LocationRepository,
-    MeasurementRepository,
-)
-
 
 def create_source(model:Source):
-    with UnitOfWork(SourceRepository) as uow:
-        source = uow.repository_object.get_or_create(model)
-        uow.commit()
-        return source
+    return source_repository.get_or_create(model)
 
 def create_location(model:Location):
-    with UnitOfWork(LocationRepository) as uow:
-        location = uow.repository_object.get_or_create(model)
-        uow.commit()
-        return location
+    return location_repository.get_or_create(model)
 
 def create_measurement(model:Measurement):
-    with UnitOfWork(MeasurementRepository) as uow:
-        measurement = uow.repository_object.get_or_create(model)
-        uow.commit()
-        return measurement
+    return measurement_repository.get_or_create(model)
 
 def update_source(model:Source, **kwargs):
-    with UnitOfWork(SourceRepository) as uow:
-        uow.repository_object.update(model, **kwargs)
-        uow.commit()
+    source_repository.update(model, **kwargs)
 
 def update_location(model:Location, **kwargs):
-    with UnitOfWork(LocationRepository) as uow:
-        uow.repository_object.update(model, **kwargs)
-        uow.commit()
+    location_repository.update(model, **kwargs)
 
 def update_measurement(model:Measurement, **kwargs):
-    with UnitOfWork(MeasurementRepository) as uow:
-        uow.repository_object.update(model, **kwargs)
-        uow.commit()
+    measurement_repository.update(model, **kwargs)
 
 def delete_source(model:Source):
-    with UnitOfWork(SourceRepository) as uow:
-        uow.repository_object.delete(model)
-        uow.commit()
+    source_repository.delete(model)
 
 def delete_location(model:Location):
-    with UnitOfWork(LocationRepository) as uow:
-        uow.repository_object.delete(model)
-        uow.commit()
+    location_repository.delete(model)
 
 def delete_measurement(model:Measurement):
-    with UnitOfWork(MeasurementRepository) as uow:
-        uow.repository_object.delete(model)
-        uow.commit()
+    measurement_repository.delete(model)

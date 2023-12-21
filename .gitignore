@@ -8,3 +8,9 @@ venv/
 
 # Ignore log files
 *.log
+
+# Ignore workspace
+openaq.ipynb
+
+# Ignore data
+*.csv

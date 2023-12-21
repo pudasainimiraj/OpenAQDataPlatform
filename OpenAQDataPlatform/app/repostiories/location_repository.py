@@ -1,7 +1,6 @@
 from sqlalchemy.orm import Session
 from OpenAQDataPlatform.app.repostiories.base_repository import BaseRepository
 from OpenAQDataPlatform.app.models.orm import Location
-from OpenAQDataPlatform.migrations import location
 
 class LocationRepository(BaseRepository):
     def __init__(self, session: Session):

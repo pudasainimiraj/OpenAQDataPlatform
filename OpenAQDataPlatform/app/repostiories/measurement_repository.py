@@ -1,9 +1,6 @@
-from re import M
 from sqlalchemy.orm import Session
 from OpenAQDataPlatform.app.repostiories.base_repository import BaseRepository
 from OpenAQDataPlatform.app.models.orm import Measurement
-from OpenAQDataPlatform.migrations import location
-
 class MeasurementRepository(BaseRepository):
     def __init__(self, session: Session):
         super().__init__(session)

@@ -2,10 +2,9 @@ import abc
 import os
 from typing import Union
 from dotenv import load_dotenv
-from OpenAQDataPlatform.app.models.orm import Source
 from OpenAQDataPlatform.app.repostiories import LocationRepository, MeasurementRepository, SourceRepository
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 
 
 load_dotenv()  # Load environment variables once, outside of the class
