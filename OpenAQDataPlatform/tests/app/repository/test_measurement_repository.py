@@ -6,7 +6,7 @@ from OpenAQDataPlatform.app.repostiories import MeasurementRepository
 def test_get_or_create_measurement(db_session):
     measurement_repository = MeasurementRepository(db_session)
     # Create a new measurement
-    new_measurement = measurement_repository.get_or_create_measurement(
+    new_measurement = measurement_repository.get_or_create(
         location_id="test_location_1", parameter="test_param", value=1, unit="test", date=datetime(2021, 1, 1), source_id="test_source1"
     )
     # Test that a new measurement was created
@@ -14,7 +14,7 @@ def test_get_or_create_measurement(db_session):
     assert db_session.query(Measurement).filter_by(location_id="test_location_1", parameter="test_param", date=datetime(2021, 1, 1)).count() == 1
 
     # Retrieve the existing measurement
-    existing_measurement = measurement_repository.get_or_create_measurement(
+    existing_measurement = measurement_repository.get_or_create(
         location_id="test_location_1", parameter="test_param", value=1, unit="test", date=datetime(2021, 1, 1), source_id="test_source1"
     )
     # Test that the existing measurement was retrieved, not created anew
@@ -22,7 +22,7 @@ def test_get_or_create_measurement(db_session):
 
 def test_update(db_session):
     measurement_repository = MeasurementRepository(db_session)
-    test_measurement = measurement_repository.get_or_create_measurement(
+    test_measurement = measurement_repository.get_or_create(
         location_id="test_location_2", parameter="test_param", value=1, unit="test", date=datetime(2021, 1, 1), source_id="test_source1"
     )
     # Update the measurement
@@ -35,7 +35,7 @@ def test_update(db_session):
 def test_query_by_location_id(db_session):
     measurement_repository = MeasurementRepository(db_session)
     # Create a new measurement
-    new_measurement = measurement_repository.get_or_create_measurement(
+    new_measurement = measurement_repository.get_or_create(
         location_id="test_location_3", parameter="test_param", value=1, unit="test", date=datetime(2021, 1, 1), source_id="test_source1"
     )
     # Test that a new measurement was created
@@ -50,7 +50,7 @@ def test_query_by_location_id(db_session):
 def test_query_by_source_id(db_session):
     measurement_repository = MeasurementRepository(db_session)
     # Create a new measurement
-    new_measurement = measurement_repository.get_or_create_measurement(
+    new_measurement = measurement_repository.get_or_create(
         location_id="test_location_4", parameter="test_param", value=1, unit="test", date=datetime(2021, 1, 1), source_id="test_source3"
     )
     # Test that a new measurement was created
@@ -65,7 +65,7 @@ def test_query_by_source_id(db_session):
 def test_query_by_parameter_id(db_session):
     measurement_repository = MeasurementRepository(db_session)
     # Create a new measurement
-    new_measurement = measurement_repository.get_or_create_measurement(
+    new_measurement = measurement_repository.get_or_create(
         location_id="test_location_5", parameter="test_param_new", value=1, unit="test", date=datetime(2021, 1, 1), source_id="test_source4"
     )
     # Test that a new measurement was created

@@ -15,7 +15,7 @@ SessionLocal = sessionmaker(bind=create_engine(TSDB_URI, isolation_level="READ C
 
 class AbstractUOW(abc.ABC):
     def __init__(self) -> None:
-        self.repo_instance: Union[LocationRepository, MeasurementRepository, SourceRepository]
+        self.repository_object: Union[LocationRepository, MeasurementRepository, SourceRepository]
         super().__init__()
         
     def __enter__(self) -> "AbstractUOW":
@@ -38,8 +38,8 @@ class AbstractUOW(abc.ABC):
         pass
 
 class UnitOfWork(AbstractUOW):
-    def __init__(self, repo_instance: Union[LocationRepository, MeasurementRepository, SourceRepository]):
-        self.repo_instance = repo_instance
+    def __init__(self, repository_object: Union[LocationRepository, MeasurementRepository, SourceRepository]):
+        self.repository_object = repository_object
         super().__init__()
 
     def commit(self):
@@ -47,10 +47,8 @@ class UnitOfWork(AbstractUOW):
             self._session.commit()
         except Exception as e:
             self.rollback()
-            # Consider adding logging here
             raise e
-            
+        
     def rollback(self):
         self._session.rollback()
 
-# Additional initialization for repositories can be added here

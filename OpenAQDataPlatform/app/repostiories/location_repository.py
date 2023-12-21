@@ -6,8 +6,8 @@ from OpenAQDataPlatform.migrations import location
 class LocationRepository(BaseRepository):
     def __init__(self, session: Session):
         super().__init__(session)
-
-    def get_or_create_location(self, model:Location):
+    
+    def get_or_create(self, model:Location):
         # Check if a location already exists with the given composite key
         existing_location = self.session.query(Location).filter_by(
             location_id=model.location_id
@@ -47,4 +47,8 @@ class LocationRepository(BaseRepository):
     def delete(self, model:Location):
         self.session.delete(model)
         self.session.commit()
+    
+    @property
+    def model(self):
+        return Location
 

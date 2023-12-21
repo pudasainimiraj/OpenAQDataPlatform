@@ -5,7 +5,7 @@ from OpenAQDataPlatform.app.repostiories.source_repository import SourceReposito
 def test_get_or_create_source(db_session):
     source_repository = SourceRepository(db_session)
     # Create a new source
-    new_source = source_repository.get_or_create_source(
+    new_source =  source_repository.get_or_create(
         model=Source(
             source_name="test_source1",
             source_url="https://example.com",
@@ -34,7 +34,7 @@ def test_get_or_create_source(db_session):
     )
 
     # Retrieve the existing source
-    existing_source = source_repository.get_or_create_source(
+    existing_source =  source_repository.get_or_create(
         model=Source(
             source_name="test_source1",
             source_url="https://example.com",
@@ -50,7 +50,7 @@ def test_get_or_create_source(db_session):
 
 def test_update(db_session):
     source_repository = SourceRepository(db_session)
-    test_source = source_repository.get_or_create_source(
+    test_source =  source_repository.get_or_create(
         model=Source(
             source_name="test_source2",
             source_url="https://example.com",
@@ -70,7 +70,7 @@ def test_update(db_session):
 def test_query_by_id(db_session):
     source_repository = SourceRepository(db_session)
     # Create a new source
-    new_source = source_repository.get_or_create_source(
+    new_source =  source_repository.get_or_create(
         model=Source(
             source_name="test_source3",
             source_url="https://example.com",
@@ -106,7 +106,7 @@ def test_query_by_id(db_session):
 def test_query_all(db_session):
     source_repository = SourceRepository(db_session)
     # Create a new source
-    new_source = source_repository.get_or_create_source(
+    new_source =  source_repository.get_or_create(
         model=Source(
             source_name="test_source4",
             source_url="https://example.com",
