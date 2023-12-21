@@ -7,7 +7,7 @@ from OpenAQDataPlatform.app.repostiories.location_repository import LocationRepo
 def test_get_or_create_location(db_session):
     location_repository = LocationRepository(db_session)
     # Create a new location
-    new_location = location_repository.get_or_create_location(
+    new_location = location_repository.get_or_create(
         model=Location(
             location_id="test_location1",
             location_name="test_location1",
@@ -36,7 +36,7 @@ def test_get_or_create_location(db_session):
     )
 
     # Retrieve the existing location
-    existing_location = location_repository.get_or_create_location(
+    existing_location = location_repository.get_or_create(
         model=Location(
             location_id="test_location1",
             location_name="test_location1",
@@ -52,7 +52,7 @@ def test_get_or_create_location(db_session):
     
 def test_update_location(db_session):
     location_repository = LocationRepository(db_session)
-    test_location = location_repository.get_or_create_location(
+    test_location = location_repository.get_or_create(
         model=Location(
             location_id="test_location2",
             location_name="test_location2",
@@ -71,7 +71,7 @@ def test_update_location(db_session):
     
 def test_query_by_id(db_session):
     location_repository = LocationRepository(db_session)
-    test_location = location_repository.get_or_create_location(
+    test_location = location_repository.get_or_create(
         model=Location(
             location_id="test_location1",
             location_name="test_location1",

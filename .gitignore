@@ -1,2 +1,10 @@
 ./venv
 install_airflow.sh
+# Ignore virtual environment directories
+venv/
+
+# Ignore .env file
+.env
+
+# Ignore log files
+*.log
