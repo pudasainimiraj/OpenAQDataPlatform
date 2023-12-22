@@ -16,5 +16,5 @@ openaq.ipynb
 *.csv
 
 # Ignore __pycache__ folder
-__pycache__/
-**__pycache__**
+**/__pycache__/
+
