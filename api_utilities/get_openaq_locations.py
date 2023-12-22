@@ -1,28 +1,32 @@
 import requests
 import os
 import pandas as pd
+from ratelimit import limits, sleep_and_retry
 from typing import List
 from dotenv import load_dotenv
 
+from OpenAQDataPlatform.migrations import locations
+
 # Load environment variables once, outside of the class
-load_dotenv() 
+load_dotenv()
 
 OPENAQ_API_KEY = os.getenv("OPEN_API_KEY")
 
-def get_measurement_by_location(country_code:List)->pd.DataFrame:
+@sleep_and_retry
+@limits(calls=1, period=1)
+def get_all_locations(country_code:List)->pd.DataFrame:
     """Get available measurement from the country code for that
         country from the OpenAQ API.
         Should update if the data in openAQ changes.
 
     Args:
         country_code (List[][]): List of country codes.
-        
+
     Returns:
         pd.DataFrame: Returns a dataframe with measurement.
     """
-    
-    
-    get_measurement_url = "https://api.openaq.org/v2/locations?"
+
+    get_measurement_url = "https://api.openaq.org/v2/locationss?"
 
     # Create headers with the API key
     headers = {
@@ -38,8 +42,8 @@ def get_measurement_by_location(country_code:List)->pd.DataFrame:
     # Make the GET request with the headers
     response = requests.get(get_measurement_url, headers=headers, params=query_string)
 
-    measurement_data = response.json()
+    locations_data = response.json()
 
-    measurement_df = pd.DataFrame(measurement_data["results"])
-  
-    return measurement_df
+    locations_df = pd.DataFrame(locations_data["results"])
+
+    return locations_df

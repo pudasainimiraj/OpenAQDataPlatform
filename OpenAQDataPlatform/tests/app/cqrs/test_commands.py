@@ -2,26 +2,26 @@
 # import pytest
 # from OpenAQDataPlatform.tests.app.unit_of_work.test_abstract_uow import uow
 # from OpenAQDataPlatform.tests.app.test_session import db_session
-# from OpenAQDataPlatform.app.models.orm import Location, Source, Measurement
+# from OpenAQDataPlatform.app.models.orm import locations, Source, Measurement
 # from OpenAQDataPlatform.app.unit_of_work.abstract_uow import UnitOfWork
 # from OpenAQDataPlatform.app.repostiories import (
 #     SourceRepository,
 # )
 # from OpenAQDataPlatform.app.cqrs.commands import (
-#     create_location,
+#     create_locations,
 #     create_source,
 #     create_measurement,
 #     delete_measurement,
-#     update_location,
+#     update_locations,
 #     update_source,
 #     update_measurement,
-#     delete_location,
+#     delete_locations,
 #     delete_source,
 #     delete_measurement,
 # )
 # from OpenAQDataPlatform.app.repostiories import (
 #     source_repository,
-#     location_repository,
+#     locations_repository,
 #     measurement_repository,
 # )
 
