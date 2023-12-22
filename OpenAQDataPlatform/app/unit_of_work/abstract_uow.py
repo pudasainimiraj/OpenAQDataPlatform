@@ -2,10 +2,9 @@ import abc
 import os
 from typing import Union
 from dotenv import load_dotenv
-from OpenAQDataPlatform.app.models.orm import Source
-from OpenAQDataPlatform.app.repostiories import LocationRepository, MeasurementRepository, SourceRepository
+from OpenAQDataPlatform.app.repostiories import locationsRepository, MeasurementRepository, SourceRepository
 from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker, Session
+from sqlalchemy.orm import sessionmaker
 
 
 load_dotenv()  # Load environment variables once, outside of the class
@@ -15,7 +14,7 @@ SessionLocal = sessionmaker(bind=create_engine(TSDB_URI, isolation_level="READ C
 
 class AbstractUOW(abc.ABC):
     def __init__(self) -> None:
-        self.repository_object: Union[LocationRepository, MeasurementRepository, SourceRepository]
+        self.repository_object: Union[locationsRepository, MeasurementRepository, SourceRepository]
         super().__init__()
         
     def __enter__(self) -> "AbstractUOW":
@@ -38,7 +37,7 @@ class AbstractUOW(abc.ABC):
         pass
 
 class UnitOfWork(AbstractUOW):
-    def __init__(self, repository_object: Union[LocationRepository, MeasurementRepository, SourceRepository]):
+    def __init__(self, repository_object: Union[locationsRepository, MeasurementRepository, SourceRepository]):
         self.repository_object = repository_object
         super().__init__()
 

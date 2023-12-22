@@ -1,19 +1,16 @@
-from re import M
 from sqlalchemy.orm import Session
 from OpenAQDataPlatform.app.repostiories.base_repository import BaseRepository
 from OpenAQDataPlatform.app.models.orm import Measurement
-from OpenAQDataPlatform.migrations import location
-
 class MeasurementRepository(BaseRepository):
     def __init__(self, session: Session):
         super().__init__(session)
         
 
 
-    def get_or_create(self, location_id, parameter, value, unit, date, source_id)->Measurement:
+    def get_or_create(self, locations_id, parameter, value, unit, date, source_id)->Measurement:
         # Check if a measurement already exists with the given composite key
         existing_measurement = self.session.query(Measurement).filter_by(
-            location_id=location_id, 
+            locations_id=locations_id, 
             parameter=parameter, 
             date=date
         ).first()
@@ -24,7 +21,7 @@ class MeasurementRepository(BaseRepository):
 
         # Otherwise, create a new measurement
         new_measurement = Measurement(
-            location_id=location_id, 
+            locations_id=locations_id, 
             parameter=parameter, 
             value=value, 
             unit=unit, 
@@ -35,9 +32,13 @@ class MeasurementRepository(BaseRepository):
         self.session.commit()
         return new_measurement
 
+    def get_or_create_batch(self, model_list:list[Measurement]):
+        for model in model_list:
+            self.get_or_create(model)
 
-    def update(self, model, **kwargs):
-        self.session.query(Measurement).filter_by(location_id=model.location_id, parameter=model.parameter, date=model.date).update(kwargs)
+
+    def update(self, model:Measurement, **kwargs):
+        self.session.query(Measurement).filter_by(locations_id=model.locations_id, parameter=model.parameter, date=model.date).update(kwargs)
         self.session.commit()
 
     def query_all(self):
@@ -49,14 +50,14 @@ class MeasurementRepository(BaseRepository):
     def query_by_source_id(self, source_id)->Measurement:
         return self.session.query(Measurement).filter_by(source_id=source_id).all()
 
-    def query_by_location_id(self, location_id)->Measurement:
-        return self.session.query(Measurement).filter_by(location_id=location_id).all()
+    def query_by_locations_id(self, locations_id)->Measurement:
+        return self.session.query(Measurement).filter_by(locations_id=locations_id).all()
 
     def query_by_parameter(self, parameter)->Measurement:
         return self.session.query(Measurement).filter_by(parameter=parameter).all()
 
-    def query_by_source_id_and_location_id(self, source_id, location_id)->Measurement:
-        return self.session.query(Measurement).filter_by(source_id=source_id).filter_by(location_id=location_id).all()
+    def query_by_source_id_and_locations_id(self, source_id, locations_id)->Measurement:
+        return self.session.query(Measurement).filter_by(source_id=source_id).filter_by(locations_id=locations_id).all()
 
     def query_by_date(self, start_date, end_date)->Measurement:
         return self.session.query(Measurement).filter(measurement.c.date >= start_date).filter(measurement.c.date <= end_date).all()

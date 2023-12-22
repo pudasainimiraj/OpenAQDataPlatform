@@ -1,16 +1,16 @@
 from cgi import test
-from OpenAQDataPlatform.migrations import location
+from OpenAQDataPlatform.migrations import locations
 from OpenAQDataPlatform.tests.app.test_session import db_session
-from OpenAQDataPlatform.app.models.orm import Location
-from OpenAQDataPlatform.app.repostiories.location_repository import LocationRepository
+from OpenAQDataPlatform.app.models.orm import locations
+from OpenAQDataPlatform.app.repostiories.locations_repository import locationsRepository
 
-def test_get_or_create_location(db_session):
-    location_repository = LocationRepository(db_session)
-    # Create a new location
-    new_location = location_repository.get_or_create(
-        model=Location(
-            location_id="test_location1",
-            location_name="test_location1",
+def test_get_or_create_locations(db_session):
+    locations_repository = locationsRepository(db_session)
+    # Create a new locations
+    new_locations = locations_repository.get_or_create(
+        model=locations(
+            locations_id="test_locations1",
+            locations_name="test_locations1",
             country="test_country",
             city="test_city",
             latitude=1.0,
@@ -18,13 +18,13 @@ def test_get_or_create_location(db_session):
             count=1,
         )
     )
-    # Test that a new location was created
-    assert new_location is not None
+    # Test that a new locations was created
+    assert new_locations is not None
     assert (
-        db_session.query(Location)
+        db_session.query(locations)
         .filter_by(
-            location_id="test_location1",
-            location_name="test_location1",
+            locations_id="test_locations1",
+            locations_name="test_locations1",
             country="test_country",
             city="test_city",
             latitude=1.0,
@@ -35,11 +35,11 @@ def test_get_or_create_location(db_session):
         == 1
     )
 
-    # Retrieve the existing location
-    existing_location = location_repository.get_or_create(
-        model=Location(
-            location_id="test_location1",
-            location_name="test_location1",
+    # Retrieve the existing locations
+    existing_locations = locations_repository.get_or_create(
+        model=locations(
+            locations_id="test_locations1",
+            locations_name="test_locations1",
             country="test_country",
             city="test_city",
             latitude=1.0,
@@ -47,15 +47,15 @@ def test_get_or_create_location(db_session):
             count=1,
         )
     )
-    # Test that the existing location was retrieved, not created anew
-    assert existing_location == new_location
+    # Test that the existing locations was retrieved, not created anew
+    assert existing_locations == new_locations
     
-def test_update_location(db_session):
-    location_repository = LocationRepository(db_session)
-    test_location = location_repository.get_or_create(
-        model=Location(
-            location_id="test_location2",
-            location_name="test_location2",
+def test_update_locations(db_session):
+    locations_repository = locationsRepository(db_session)
+    test_locations = locations_repository.get_or_create(
+        model=locations(
+            locations_id="test_locations2",
+            locations_name="test_locations2",
             country="test_country",
             city="test_city",
             latitude=1.0,
@@ -63,18 +63,18 @@ def test_update_location(db_session):
             count=1,
         )
     )
-    # Update the location
-    location_repository.update(test_location, city="updated_city", country="updated_country")
+    # Update the locations
+    locations_repository.update(test_locations, city="updated_city", country="updated_country")
     
-    updated_location = db_session.query(Location).filter_by(location_id="test_location2").first()
-    assert updated_location.city == "updated_city" and updated_location.country == "updated_country"
+    updated_locations = db_session.query(locations).filter_by(locations_id="test_locations2").first()
+    assert updated_locations.city == "updated_city" and updated_locations.country == "updated_country"
     
 def test_query_by_id(db_session):
-    location_repository = LocationRepository(db_session)
-    test_location = location_repository.get_or_create(
-        model=Location(
-            location_id="test_location1",
-            location_name="test_location1",
+    locations_repository = locationsRepository(db_session)
+    test_locations = locations_repository.get_or_create(
+        model=locations(
+            locations_id="test_locations1",
+            locations_name="test_locations1",
             country="test_country",
             city="test_city",
             latitude=1.0,
@@ -82,13 +82,13 @@ def test_query_by_id(db_session):
             count=1,
         )
     )
-    # Query the location
-    location_query = location_repository.query_by_id("test_location1")
+    # Query the locations
+    locations_query = locations_repository.query_by_id("test_locations1")
     
-    assert location_query == test_location
+    assert locations_query == test_locations
 
 def test_query_all(db_session):
-    location_repository = LocationRepository(db_session)
-    # Query all locations
-    location_query = location_repository.query_all()
-    assert location_query is not None
+    locations_repository = locationsRepository(db_session)
+    # Query all locationss
+    locations_query = locations_repository.query_all()
+    assert locations_query is not None

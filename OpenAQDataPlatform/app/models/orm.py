@@ -1,5 +1,5 @@
-from itertools import count
-from sqlalchemy import create_engine, Boolean, Float, MetaData, Column, String, ForeignKey, DateTime, Integer
+
+from sqlalchemy import Boolean, Float, MetaData, Column, String, ForeignKey, DateTime, Integer
 from sqlalchemy.orm import declarative_base, relationship
 
 
@@ -7,27 +7,30 @@ from sqlalchemy.orm import declarative_base, relationship
 Base = declarative_base()
 metadata = MetaData()
 
-class Location(Base):
-    __tablename__ = 'location'
-    location_id = Column(String, primary_key=True)
-    location_name = Column(String, nullable=False)
+class locations(Base):
+    __tablename__ = 'locations'
+    locations_id = Column(String, primary_key=True)
+    locations_name = Column(String, nullable=False)
     country = Column(String, nullable=False)
     city = Column(String)
     latitude = Column(Float)
     longitude = Column(Float)
+    manufacturers = Column(String)
     count = Column(Integer)
-    measurements = relationship('Measurement', back_populates='location')
+
+    measurements = relationship('Measurement', back_populates='locations')
 
 class Measurement(Base):
     __tablename__ = 'measurement'
-    location_id = Column(String, ForeignKey('location.location_id'), primary_key=True)
+    locations_id = Column(String, ForeignKey('locations.locations_id'), primary_key=True)
     parameter = Column(String, primary_key=True)  # Part of the composite primary key
     date = Column(DateTime, primary_key=True)  # Part of the composite primary key
     value = Column(Float, nullable=False)
     unit = Column(String, nullable=False)
     source_id = Column(String, ForeignKey('source.source_id'))
+  
     # Relationships
-    location = relationship('Location', back_populates='measurements')
+    locations = relationship('locations', back_populates='measurements')
     source = relationship('Source', back_populates='measurements')
 
 class Source(Base):

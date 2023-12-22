@@ -1,3 +1,4 @@
+from ctypes import Union
 import pytest
 from OpenAQDataPlatform.tests.app.test_session import db_session
 from OpenAQDataPlatform.app.unit_of_work.abstract_uow import UnitOfWork

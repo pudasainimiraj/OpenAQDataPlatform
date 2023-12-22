@@ -8,3 +8,13 @@ venv/
 
 # Ignore log files
 *.log
+
+# Ignore workspace
+openaq.ipynb
+
+# Ignore data
+*.csv
+
+# Ignore __pycache__ folder
+**/__pycache__/
+

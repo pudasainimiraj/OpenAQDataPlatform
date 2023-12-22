@@ -1,7 +1,5 @@
 mangum
-numpy==1.25.0
-packaging==23.1
+ratelimit
 pandas==2.0.2
 pytest==7.4.0
-airflow
 sqlalchemy==1.4.31
