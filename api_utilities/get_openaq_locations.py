@@ -5,8 +5,6 @@ from ratelimit import limits, sleep_and_retry
 from typing import List
 from dotenv import load_dotenv
 
-from OpenAQDataPlatform.migrations import locations
-
 # Load environment variables once, outside of the class
 load_dotenv()
 

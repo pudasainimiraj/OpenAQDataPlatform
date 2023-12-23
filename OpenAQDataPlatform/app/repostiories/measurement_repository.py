@@ -32,7 +32,7 @@ class MeasurementRepository(BaseRepository):
         self.session.commit()
         return new_measurement
 
-    def get_or_create_batch(self, model_list:list[Measurement]):
+    def get_or_create_batch(self, model_list:list):
         for model in model_list:
             self.get_or_create(model)
 

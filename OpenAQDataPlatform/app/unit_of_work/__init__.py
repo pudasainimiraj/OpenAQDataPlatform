@@ -1,1 +1,1 @@
-from abstract_uow import UnitOfWork
+from .abstract_uow import UnitOfWork
