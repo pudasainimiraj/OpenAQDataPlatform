@@ -3,13 +3,17 @@ services:
   app:
     build: .
     volumes:
-      - .:/app
-    command: pytest tests/
+      - ./OpenAQDataPlatform:/OpenAQDataPlatform
+    environment:
+      - PYTHONPATH=/OpenAQDataPlatform
   airflow:
     image: apache/airflow:latest
     ports:
       - "8080:8080"
     volumes:
+      - ./requirements.txt:/opt/airflow/requirements.txt
+      - ./OpenAQDataPlatform:/opt/airflow/OpenAQDataPlatform
+      - ./api_utilities:/opt/airflow/api_utilities
       - ./airflow/dags:/opt/airflow/dags
       - ./airflow/logs:/opt/airflow/logs
       - ./airflow/plugins:/opt/airflow/plugins
@@ -17,6 +21,9 @@ services:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
       - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql://myuser:mypassword@timescaledb:5432/mydatabase
+      - PYTHONPATH=/opt/airflow
+      - OPENAQ_API_KEY=bbaf6f880e46663bc05c83eab3c2c7460b6771c63c1e76a06ed8dff6acf002ed
+      - TSDB_URI=postgresql://myuser:mypassword@timescaledb:5432/mydatabase
     depends_on:
       - timescaledb
     command: bash -c "airflow db init && airflow users create \
@@ -28,6 +35,8 @@ services:
                            --email admin@example.org && \
                             airflow webserver &&
                             airflow scheduler"
+                            
+              bash -c "pip install -r /requirements.txt"
   timescaledb:
     image: timescale/timescaledb-ha:pg14-latest
     environment:
