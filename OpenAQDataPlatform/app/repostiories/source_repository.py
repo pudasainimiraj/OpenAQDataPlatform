@@ -21,7 +21,7 @@ class SourceRepository(BaseRepository):
 
     def update(self, model:Source, **kwargs):
         self.session.query(Source).filter_by(source_id=model.source_id).update(kwargs)
-        self.session.commit()
+
         
     def query_by_id(self, id:str)->Source:
         return self.session.query(Source).filter_by(source_id=id).first()

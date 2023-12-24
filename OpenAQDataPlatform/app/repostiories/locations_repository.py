@@ -27,7 +27,6 @@ class locationsRepository(BaseRepository):
             count=model.count
         )
         self.session.add(new_locations)
-        self.session.commit()
         return new_locations
     
     def get_or_create_batch(self, model_list:list):
@@ -36,7 +35,6 @@ class locationsRepository(BaseRepository):
 
     def update(self, model:locations, **kwargs):
         self.session.query(locations).filter_by(locations_id=model.locations_id).update(kwargs)
-        self.session.commit()
         
     def query_by_id(self, id:str):
         return self.session.query(locations).filter_by(locations_id=id).first()
@@ -49,7 +47,6 @@ class locationsRepository(BaseRepository):
 
     def delete(self, model:locations):
         self.session.delete(model)
-        self.session.commit()
     
     @property
     def model(self):

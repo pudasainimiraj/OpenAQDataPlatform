@@ -29,7 +29,6 @@ class MeasurementRepository(BaseRepository):
             source_id=source_id
         )
         self.session.add(new_measurement)
-        self.session.commit()
         return new_measurement
 
     def get_or_create_batch(self, model_list:list):
@@ -39,7 +38,7 @@ class MeasurementRepository(BaseRepository):
 
     def update(self, model:Measurement, **kwargs):
         self.session.query(Measurement).filter_by(locations_id=model.locations_id, parameter=model.parameter, date=model.date).update(kwargs)
-        self.session.commit()
+
 
     def query_all(self):
         return self.session.query(Measurement).all()

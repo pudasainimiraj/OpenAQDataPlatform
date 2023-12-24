@@ -37,7 +37,6 @@ def get_all_measurement_by_country(country_code:List)->pd.DataFrame:
     query_string = {
         "date_from":"2015-01-01",
         "date_to":str(datetime.now().strftime("%Y-%m-%d")),
-        "limit": 3000,
         "page": 1,
         "offset": 0,
         "sort": "desc",

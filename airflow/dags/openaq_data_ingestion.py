@@ -1,20 +1,20 @@
+import ast
 import datetime
-from json import load
-from numpy import source
 import pandas as pd
-from OpenAQDataPlatform.app.models.orm import Source
+import logging
 
 
 from airflow import DAG
 from airflow.exceptions import AirflowException
 from airflow.decorators import task
 
+from OpenAQDataPlatform.app.models.orm import Source,locations, Measurement
 from api_utilities.get_openaq_country_list import country_list
 from api_utilities.get_openaq_locations import get_all_locations
 from api_utilities.get_openaq_measurement import get_all_measurement_by_country
-from OpenAQDataPlatform.app.unit_of_work import UnitOfWork
+from OpenAQDataPlatform.app.cqrs import commands
 
-
+logger = logging.getLogger(__name__)
 default_args = {
     "owner": "airflow",
     "start_date": datetime.datetime(2021, 1, 1),
@@ -33,7 +33,7 @@ dag = DAG(
 
 with dag:
     @task(task_id="get_locations_data")
-    def get_locations_data_into_df()->pd.DataFrame:
+    def get_locations_data_into_df():
         all_locations_df = pd.DataFrame()
         list_of_countries = country_list()
         
@@ -41,10 +41,10 @@ with dag:
             locations_df = get_all_locations(country[0])
             all_locations_df = pd.concat([all_locations_df, locations_df])
         
-        return all_locations_df
+        all_locations_df.to_csv("./all_locations.csv")
 
     @task(task_id="get_measurement_data")
-    def get_measurement_data_into_df()->pd.DataFrame:
+    def get_measurement_data_into_df():
         list_of_countries = country_list()
         all_measurement_df = pd.DataFrame()
         
@@ -52,54 +52,61 @@ with dag:
             measurement_df = get_all_measurement_by_country(country[0])
             all_measurement_df = pd.concat([all_measurement_df, measurement_df])
         
-        return all_measurement_df
+        all_measurement_df.to_csv("./all_measurement.csv")
 
-    @task(task_id="transform_locations", )
-    def transform_locations_data(locations_df:pd.DataFrame)->pd.DataFrame:
-        locations_df = locations_df[["id","name", "city", "country", "coordinates","sources","manufacturers","count"]]
-        locations_df["longitude"] = locations_df["coordinates"].apply(lambda x: x["longitude"])
-        locations_df["latitude"] = locations_df["coordinates"].apply(lambda x: x["latitude"])
+    @task(task_id="transform_locations" )
+    def transform_locations_data():
+        location_df= pd.read_csv("./all_locations.csv")
+        logger.info(f"Columns in locations {location_df.columns}")
+        locations_df = location_df[["id","name", "city", "country", "coordinates","manufacturers"]]
+        locations_df.loc[:,'latitude'] = locations_df["coordinates"].apply(lambda x: x["latitude"] if isinstance(x, dict) else None)
+        location_df.loc[:,'longitude'] = locations_df["coordinates"].apply(lambda x: x["longitude"] if isinstance(x, dict) else None)
         locations_df = locations_df.rename(columns={"id":"locations_id","name":"locations_name",})
         locations_df = locations_df.drop_duplicates(subset=["locations_id",])
-        return locations_df
+        locations_df.to_csv("./all_locations_transform.csv")
 
     @task(task_id="transform_measurement")
-    def transform_measurement_data(measurement_df:pd.DataFrame)->pd.DataFrame:
-        measurement_df = measurement_df[["locationsId", "parameter", "date", "value", "unit"]]
-        measurement_df = measurement_df.rename(columns={"locations":"locations_id"})
-    
-        return measurement_df
+    def transform_measurement_data():
+        measurement_df = pd.read_csv("all_measurement.csv")
+        logger.info(f"columns in measurement - {measurement_df.columns}")
+        measurement_df = measurement_df[["locationId", "parameter", "date", "value", "unit"]]
+        measurement_df = measurement_df.rename(columns={"locationId":"locations_id"})
+        
+        measurement_df=measurement_df.to_csv("./all_measurement_transform.csv")
 
-    @task(task_id="load_locations")
-    def load_locations(locations_df: pd.DataFrame)->str:
-        locations_repository = locations_repository
-        locations_df = transform_locations_data(locations_df)
-        locations_df = locations_df.to_dict(orient="records")
-        locations_df = [Source(**location) for location in locations_df]
+    @task(task_id="load_locations", trigger_rule="none_failed")
+    def load_locations():
+        
+        locations_df:pd.DataFrame = pd.read_csv("./all_locations_transform.csv")
+        locations_df.drop(columns=["Unnamed: 0", "coordinates"], inplace=True)
+        locations_df.loc[:,'locations_id'] = locations_df['locations_id'].astype(str)
+        locations_df=locations_df.to_dict(orient="records")
+        # locations_df["locations_id"].astype(str)
+        locations_df = [locations(**location) for location in locations_df]
         try:
-            with UnitOfWork(locations_repository) as uow:
-                uow.repository_object.get_or_create_batch(locations_df)
-                return "Success"
+            commands.bulk_create_locations(locations_df)
+            return "Success"
         except Exception as e:
             raise AirflowException(e)
 
-    @task(task_id="load_measurement")
-    def load_measurement(measurement_df: pd.DataFrame, source_id)->str:
-        measurement_repository = measurement_repository
-        measurement_df = transform_measurement_data(measurement_df)
+    @task(task_id="load_measurement", trigger_rule="none_failed")
+    def load_measurement( source_id:str)->str:
+        measurement_df = pd.read_csv("./all_measurement_transform.csv")
         measurement_df["source_id"] = source_id
+        # drop unnamed column and index column
+        measurement_df.loc[:,"locations_id"]=measurement_df["locations_id"].astype(str)
+        measurement_df["date"]=measurement_df['date'].apply(lambda x: ast.literal_eval(x)['utc'] if x else None)
+        measurement_df.drop(columns=["Unnamed: 0"], inplace=True)
         measurement_df = measurement_df.to_dict(orient="records")
-        measurement_df = [Source(**measurement) for measurement in measurement_df]
+        measurement_df = [Measurement(**measurement) for measurement in measurement_df]
         try:
-            with UnitOfWork(measurement_repository) as uow:
-                uow.repository_object.get_or_create_batch(measurement_df)
+                commands.bulk_create_measurement(measurement_df)
                 return "Success"
         except Exception as e:
             raise AirflowException(e)
 
     @task(task_id="load_source")
     def load_source()->str:
-        source_repository = source_repository
         source = Source(
             source_name="OpenAQ",
             source_url="https://docs.openaq.org/",
@@ -110,20 +117,24 @@ with dag:
             source_active=True
         )
         try:
-            with UnitOfWork(source_repository) as uow:
-                uow.repository_object.get_or_create(source)
-            return source
+            commands.create_source(source)
+            return source.source_id
         except Exception as e:
             raise AirflowException(e)
  
-    source_task = load_source()
+
+
     locations_df_task = get_locations_data_into_df()
     measurement_df_task = get_measurement_data_into_df()
     
-    
-    load_locations_task = load_locations(locations_df_task)
-    load_measurement_task = load_measurement(measurement_df_task, source_task)
-    
-    source_task >> load_locations_task >> load_measurement_task
-    
+    location_transformation_task = transform_locations_data()
+    measurement_transfomation_task = transform_measurement_data()
+
+    # Pass task outputs as parameters to subsequent tasks
+    load_locations_task = load_locations()
+    load_measurement_task = load_measurement(load_source())
+
+    # Set up task dependencies
+    measurement_df_task >>measurement_transfomation_task>> load_measurement_task
+    locations_df_task >>location_transformation_task>> load_locations_task
         

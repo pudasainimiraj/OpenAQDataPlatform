@@ -14,6 +14,7 @@ COPY ./OpenAQDataPlatform ./OpenAQDataPlatform
 COPY ./api_utilities ./api_utilities
 
 RUN pip install --no-cache-dir -r requirements.txt
-# set up application gateway
-ENTRYPOINT [ "python" ]
 
+
+# set up application gateway
+ENTRYPOINT [ "python"]

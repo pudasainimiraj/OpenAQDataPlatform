@@ -1,70 +1,84 @@
+from OpenAQDataPlatform.app.unit_of_work import UnitOfWork
 from OpenAQDataPlatform.app.repostiories import source_repository, locations_repository, measurement_repository
 from OpenAQDataPlatform.app.models.orm import Source, locations, Measurement
 
-def bulk_create_locations(model_list:list[locations])->list[locations]:
+def bulk_create_locations(model_list:list)->None:
     try:
-        return locations_repository.get_or_create_batch(model_list)
+        with UnitOfWork(locations_repository) as uow:
+            return uow.repository_object.get_or_create_batch(model_list)
     except Exception as e:
         raise e
         
-def bulk_create_measurement(model_list:list[Measurement])->list[Measurement]:
+def bulk_create_measurement(model_list:list)->None:
     try:
-        return measurement_repository.get_or_create_batch(model_list)
+        with UnitOfWork(measurement_repository) as uow:
+            return uow.repository_object.get_or_create_batch(model_list)
     except Exception as e:
         raise e
     
 def create_source(model:Source)-> Source:
     try:
-        return source_repository.get_or_create(model)
+        with UnitOfWork(source_repository) as uow:
+            source = uow.repository_object.get_or_create(model)
+            source_dict = source.__dict__
+            
     except Exception as e:
         raise e
 
 def create_locations(model:locations)->locations:
     try:
-        return locations_repository.get_or_create(model)
+        with UnitOfWork(source_repository) as uow:
+            return uow.repository_object.get_or_create(model)
     except Exception as e:
         raise e
 
 def create_measurement(model:Measurement)->Measurement:
     
     try:
-        return measurement_repository.get_or_create(model)
+        with UnitOfWork(measurement_repository) as uow:
+            return uow.repository_object.get_or_create(model)
     except Exception as e:
         raise e
     
 
 def update_source(model:Source, **kwargs)->Source:
     try:
-        source_repository.update(model, **kwargs)
+        with UnitOfWork(source_repository) as uow:
+            uow.repository_object.update(model, **kwargs)
     except Exception as e:
         raise e
 
 def update_locations(model:locations, **kwargs)->locations:
     try:
-        locations_repository.update(model, **kwargs)
+        with UnitOfWork(locations_repository) as uow:
+            uow.repository_object.update(model, **kwargs)
     except Exception as e:
         raise e
     
 def update_measurement(model:Measurement, **kwargs)->Measurement:
     try:
-        measurement_repository.update(model, **kwargs)
+        with UnitOfWork(measurement_repository) as uow:
+            uow.repository_object.update(model, **kwargs)
     except Exception as e:
         raise e
     
 def delete_source(model:Source)->Source:
     try:
-        source_repository.delete(model)
+        with UnitOfWork(source_repository) as uow:   
+            uow.repository_object.delete(model)
     except Exception as e:
         raise e
     
 def delete_locations(model:locations)->locations:
     try:
-        locations_repository.delete(model)
+        with UnitOfWork(locations_repository) as uow:
+            uow.repository_object.delete(model)
     except Exception as e:
         raise e
     
 def delete_measurement(model:Measurement)->Measurement:
     try:
-        measurement_repository.delete(model)
+        with UnitOfWork(measurement_repository) as uow:
+            uow.repository_object.delete(model)
     except Exception as e:
         raise e
