@@ -1,5 +1,6 @@
+
 # OpenAQDataPlatform
-Data Platform For Open Air Quality Data
+ETL Data Processing and Models for database 
 
 # Air Quality Data Platform
 
@@ -81,7 +82,6 @@ Access the platform in your web browser at http://localhost:8000.
 Testing
 To run tests for the project, use the following command:
 
-pytest
 
 
 # Project To-Do List
@@ -117,3 +117,4 @@ This is the To-Do list for the ongoing project. Items will be checked off as the
 - [ ] Review code for potential refactoring
 - [ ] Refactor the dag and task to make it more readable 
 - [ ] Refactor the messy transformation 
+
