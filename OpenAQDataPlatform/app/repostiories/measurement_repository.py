@@ -7,12 +7,12 @@ class MeasurementRepository(BaseRepository):
         
 
 
-    def get_or_create(self, locations_id, parameter, value, unit, date, source_id)->Measurement:
+    def get_or_create(self, model: Measurement)->Measurement:
         # Check if a measurement already exists with the given composite key
         existing_measurement = self.session.query(Measurement).filter_by(
-            locations_id=locations_id, 
-            parameter=parameter, 
-            date=date
+            locations_id=model.locations_id, 
+            parameter=model.parameter, 
+            date=model.date
         ).first()
         
         # If it exists, return the existing measurement
@@ -21,12 +21,12 @@ class MeasurementRepository(BaseRepository):
 
         # Otherwise, create a new measurement
         new_measurement = Measurement(
-            locations_id=locations_id, 
-            parameter=parameter, 
-            value=value, 
-            unit=unit, 
-            date=date, 
-            source_id=source_id
+            locations_id=model.locations_id, 
+            parameter=model.parameter, 
+            value=model.value, 
+            unit=model.unit, 
+            date=model.date, 
+            source_id=model.source_id
         )
         self.session.add(new_measurement)
         return new_measurement
