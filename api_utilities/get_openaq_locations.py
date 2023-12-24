@@ -24,7 +24,7 @@ def get_all_locations(country_code:List)->pd.DataFrame:
         pd.DataFrame: Returns a dataframe with measurement.
     """
 
-    get_measurement_url = "https://api.openaq.org/v2/locationss?"
+    get_measurement_url = "https://api.openaq.org/v2/locations?"
 
     # Create headers with the API key
     headers = {
@@ -34,14 +34,14 @@ def get_all_locations(country_code:List)->pd.DataFrame:
     # Create the query string
     query_string = {
         "country": country_code,
-        "limit": 10000
     }
 
     # Make the GET request with the headers
     response = requests.get(get_measurement_url, headers=headers, params=query_string)
-
-    locations_data = response.json()
-
-    locations_df = pd.DataFrame(locations_data["results"])
-
-    return locations_df
+    if response.status_code == 200:
+        locations_data = response.json()
+        locations_df = pd.DataFrame(locations_data["results"])
+        return locations_df
+    else:
+        print(f"Error: {response.status_code}")
+        return pd.DataFrame()
