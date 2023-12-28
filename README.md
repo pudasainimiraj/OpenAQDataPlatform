@@ -1,6 +1,6 @@
 
 # OpenAQDataPlatform
-ETL Data Processing and Models for getting real time AirQualityData. At the moment only supports few countries like USA, Nepal. 
+ETL Data Processing and Models for getting real time AirQualityData. 
 
 The data is fairly pulled from OpenAQ under fair use. Right now only have support for OpenAQ source. I am working on adding more source soon. 
 
