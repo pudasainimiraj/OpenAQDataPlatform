@@ -57,7 +57,6 @@ with dag:
     @task(task_id="transform_locations" )
     def transform_locations_data():
         location_df= pd.read_csv("./all_locations.csv")
-        logger.info(f"Columns in locations {location_df.columns}")
         locations_df = location_df[["id","name", "city", "country", "coordinates","manufacturers"]]
         locations_df.loc[:,'latitude'] = locations_df["coordinates"].apply(lambda x: x["latitude"] if isinstance(x, dict) else None)
         location_df.loc[:,'longitude'] = locations_df["coordinates"].apply(lambda x: x["longitude"] if isinstance(x, dict) else None)

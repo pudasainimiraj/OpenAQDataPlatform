@@ -34,6 +34,7 @@ def get_all_locations(country_code:List)->pd.DataFrame:
     # Create the query string
     query_string = {
         "country": country_code,
+        "limit": 10000,
     }
 
     # Make the GET request with the headers
