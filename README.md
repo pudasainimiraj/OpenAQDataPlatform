@@ -1,4 +1,4 @@
-
+hi
 # OpenAQDataPlatform
 ETL Data Processing and Models for getting real time AirQualityData. 
 
@@ -65,8 +65,9 @@ Navigate to : http://localhost:8080 to find airflow UI.
       ```bash
       airflow scheduler 
 **While you are at it also run below command in the airflow image**
-    ```bash 
-    python -m pip install -r requirements.txt
+
+      ```bash 
+      python -m pip install -r requirements.txt
 ### Run test cases 
 
 3. To see if the repositories and UOW are working as expected in case you have made any changes in any of them run :
