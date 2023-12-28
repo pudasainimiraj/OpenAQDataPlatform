@@ -87,6 +87,8 @@ This is the To-Do list for the ongoing project. Items will be checked off as the
 - [ ] Setup migrations with Alembic.
 - [ ] Fix the airflow scheduler command in docker-compose.yml file.
 - [ ] Fix the installation of requirements.txt in the airflow image.
+- [ ] Refactor UOW to commit into the session ( Right now the 
+repository directly commits into the session honestly it's due to me not knowing how to extend an abstract UOW class it's a priority).
 
 
 

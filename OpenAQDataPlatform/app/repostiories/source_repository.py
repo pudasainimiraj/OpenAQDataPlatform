@@ -11,30 +11,32 @@ class SourceRepository(BaseRepository):
         if model.source_id == None:
             return None
         
-        existing_source = self.session.query(Source).filter_by(source_id=model.source_id).first()
+        existing_source = self._session.query(Source).filter_by(source_id=model.source_id).first()
         
         if existing_source:
             return existing_source
-        
-        self.session.add(model)
+
+        self._session.add(model)
+        self._session.commit()
+      
         return model
 
     def update(self, model:Source, **kwargs):
-        self.session.query(Source).filter_by(source_id=model.source_id).update(kwargs)
+        self._session.query(Source).filter_by(source_id=model.source_id).update(kwargs)
 
         
     def query_by_id(self, id:str)->Source:
-        return self.session.query(Source).filter_by(source_id=id).first()
+        return self._session.query(Source).filter_by(source_id=id).first()
     
     def query_all(self)->List[Source]:
-        return self.session.query(Source).all()
+        return self._session.query(Source).all()
     
     def query(self):
-        return self.session.query(Source)
+        return self._session.query(Source)
 
     def delete(self, model:Source):
-        self.session.delete(model)
-        self.session.commit()
+        self._session.delete(model)
+        self._session.commit()
     
     @property
     def model(self):

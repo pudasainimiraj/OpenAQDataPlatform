@@ -1,4 +1,7 @@
 version: '3'
+networks:
+  airflow_con:
+    driver: bridge
 services:
   app:
     build: .
@@ -8,6 +11,8 @@ services:
       - PYTHONPATH=/OpenAQDataPlatform
   airflow:
     image: apache/airflow:latest
+    networks:
+      - airflow_con
     ports:
       - "8080:8080"
     volumes:
@@ -20,10 +25,10 @@ services:
     environment:
       - AIRFLOW__CORE__EXECUTOR=LocalExecutor
       - AIRFLOW__CORE__LOAD_EXAMPLES=False
-      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql+psycopg2://myuser:mypassword@timescaledb:5432/mydatabase
+      - AIRFLOW__DATABASE__SQL_ALCHEMY_CONN=postgresql://myuser:mypassword@timescaledb:5432/mydatabase
       - PYTHONPATH=/opt/airflow
       - OPENAQ_API_KEY=bbaf6f880e46663bc05c83eab3c2c7460b6771c63c1e76a06ed8dff6acf002ed
-      - TSDB_URI=postgresql+psycopg2://myuser:mypassword@timescaledb:5432/mydatabase
+      - TSDB_URI=postgresql://myuser:mypassword@timescaledb:5432/mydatabase
     depends_on:
       - timescaledb
     command: 
@@ -40,6 +45,8 @@ services:
          bash -c "pip install -r /requirements.txt"
   timescaledb:
     image: timescale/timescaledb-ha:pg14-latest
+    networks:
+      - airflow_con
     environment:
       - POSTGRES_DB=mydatabase
       - POSTGRES_USER=myuser
@@ -54,4 +61,4 @@ services:
       - --timescaledb.telemetry_level=off
       - --listen_addresses=*
     ports:
-    - "5433:5432"
+    - "5432:5432"

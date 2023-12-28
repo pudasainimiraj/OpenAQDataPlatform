@@ -28,7 +28,9 @@ class Measurement(Base):
     date = Column(DateTime, primary_key=True)  # Part of the composite primary key
     value = Column(Float, nullable=False)
     unit = Column(String, nullable=False)
+    average = Column(Float)
     source_id = Column(String, ForeignKey('source.source_id'))
+    
   
     # Relationships
     locations = relationship('locations', back_populates='measurements')

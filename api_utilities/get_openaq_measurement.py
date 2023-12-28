@@ -12,7 +12,7 @@ load_dotenv()
 OPENAQ_API_KEY = os.getenv("OPENAQ_API_KEY")
 
 @sleep_and_retry
-@limits(calls=1, period=1)
+@limits(calls=1, period=5)
 def get_all_measurement_by_country(country_code:List)->pd.DataFrame:
     """Get available measurement from the country code for that
         country from the OpenAQ API.
@@ -35,14 +35,12 @@ def get_all_measurement_by_country(country_code:List)->pd.DataFrame:
 
     # Create the query string
     query_string = {
-        "date_from":"2015-01-01",
+        "date_from":"2022-01-01",
         "date_to":str(datetime.now().strftime("%Y-%m-%d")),
-        "page": 1,
-        "offset": 0,
-        "sort": "desc",
-        "radius": 1000,
         "country": country_code,
-        "order_by": "datetime"
+        "limit": 4000,
+        
+        
     }
 
     # Make the GET request with the headers

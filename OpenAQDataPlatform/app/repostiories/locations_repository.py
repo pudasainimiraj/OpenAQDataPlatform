@@ -8,7 +8,7 @@ class locationsRepository(BaseRepository):
     
     def get_or_create(self, model:locations):
         # Check if a locations already exists with the given composite key
-        existing_locations = self.session.query(locations).filter_by(
+        existing_locations = self._session.query(locations).filter_by(
             locations_id=model.locations_id
         ).first()
         
@@ -26,7 +26,8 @@ class locationsRepository(BaseRepository):
             longitude=model.longitude, 
             count=model.count
         )
-        self.session.add(new_locations)
+        self._session.add(new_locations)
+        self._session.commit()
         return new_locations
     
     def get_or_create_batch(self, model_list:list):
@@ -34,19 +35,19 @@ class locationsRepository(BaseRepository):
             self.get_or_create(model)
 
     def update(self, model:locations, **kwargs):
-        self.session.query(locations).filter_by(locations_id=model.locations_id).update(kwargs)
+        self._session.query(locations).filter_by(locations_id=model.locations_id).update(kwargs)
         
     def query_by_id(self, id:str):
-        return self.session.query(locations).filter_by(locations_id=id).first()
+        return self._session.query(locations).filter_by(locations_id=id).first()
     
     def query_all(self):
-        return self.session.query(locations).all()
+        return self._session.query(locations).all()
     
     def query(self):
-        return self.session.query(locations)
+        return self._session.query(locations)
 
     def delete(self, model:locations):
-        self.session.delete(model)
+        self._session.delete(model)
     
     @property
     def model(self):

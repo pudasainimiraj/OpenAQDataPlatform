@@ -2,6 +2,5 @@ mangum==0.12.2
 ratelimit==2.2.1
 pandas==2.0.2
 pytest==7.4.0
-sqlalchemy==1.4.31
-alembic==1.13.1
-psycopg2-binary==2.9.1
+sqlalchemy==1.4.28
+
