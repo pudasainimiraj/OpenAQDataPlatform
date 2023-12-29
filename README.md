@@ -1,4 +1,3 @@
-hi
 # OpenAQDataPlatform
 ETL Data Processing and Models for getting real time AirQualityData. 
 
