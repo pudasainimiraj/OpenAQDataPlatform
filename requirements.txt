@@ -1,4 +1,5 @@
-mangum==0.12.2
+fastapi==0.68.1
+uvicorn==0.15.0
 ratelimit==2.2.1
 pandas==2.0.2
 pytest==7.4.0
