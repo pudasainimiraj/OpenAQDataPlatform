@@ -89,7 +89,11 @@ This is the To-Do list for the ongoing project. Items will be checked off as the
 - [ ] Fix the airflow scheduler command in docker-compose.yml file.
 - [ ] Fix the installation of requirements.txt in the airflow image.
 - [ ] Refactor UOW to commit into the session ( Right now the 
-repository directly commits into the session honestly it's due to me not knowing how to extend an abstract UOW class it's a priority).
+      repository directly commits into the session honestly it's due to me not knowing how to extend an abstract UOW class it's a priority).
+  [ ] Latitude and longitude needs type casting into appropriate format (Float
+      should be BigInt or other appropriate type)
+  [ ] Use local path Dependency for the model scripts from requirements.txt saving
+      resource to save docker resources.
 
 
 
@@ -116,7 +120,8 @@ repository directly commits into the session honestly it's due to me not knowing
 
 - [ ] Review code for potential refactoring
 - [ ] Refactor the dag and task to make it more readable 
-- [ ] Refactor the messy transformation 
+- [ ] Refactor the messy transformation
+- [ ] Implement Cache In Database (Potentially Redis) 
 
 # Future Works:
 

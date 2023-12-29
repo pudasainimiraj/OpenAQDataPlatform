@@ -1,5 +1,6 @@
 import ast
 import datetime
+from math import log
 import pandas as pd
 import logging
 
@@ -58,8 +59,13 @@ with dag:
     def transform_locations_data():
         location_df= pd.read_csv("./all_locations.csv")
         locations_df = location_df[["id","name", "city", "country", "coordinates","manufacturers"]]
+        logger.info(f"Coordinates {locations_df['coordinates'].head()}")
+        logger.info(f"Coordinates datatype {locations_df.loc[:,'coordinates'].get('longitude',{})}")
         locations_df.loc[:,'latitude'] = locations_df["coordinates"].apply(lambda x: x["latitude"] if isinstance(x, dict) else None)
         location_df.loc[:,'longitude'] = locations_df["coordinates"].apply(lambda x: x["longitude"] if isinstance(x, dict) else None)
+        logger.info(f"columns in locations - {locations_df.loc[:,'latitude']}")
+        logger.info(f"columns in locations - {locations_df['latitude'].count()}")
+        
         locations_df = locations_df.rename(columns={"id":"locations_id","name":"locations_name",})
         locations_df = locations_df.drop_duplicates(subset=["locations_id",])
         locations_df.to_csv("./all_locations_transform.csv")
@@ -135,5 +141,5 @@ with dag:
 
     # Set up task dependencies
     measurement_df_task >>measurement_transfomation_task>> load_measurement_task
-    locations_df_task >>location_transformation_task>> load_locations_task
+    locations_df_task >>location_transformation_task
         
