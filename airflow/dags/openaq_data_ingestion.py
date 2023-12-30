@@ -59,13 +59,8 @@ with dag:
     def transform_locations_data():
         location_df= pd.read_csv("./all_locations.csv")
         locations_df = location_df[["id","name", "city", "country", "coordinates","manufacturers"]]
-        logger.info(f"Coordinates {locations_df['coordinates'].head()}")
-        logger.info(f"Coordinates datatype {locations_df.loc[:,'coordinates'].get('longitude',{})}")
-        locations_df.loc[:,'latitude'] = locations_df["coordinates"].apply(lambda x: x["latitude"] if isinstance(x, dict) else None)
-        location_df.loc[:,'longitude'] = locations_df["coordinates"].apply(lambda x: x["longitude"] if isinstance(x, dict) else None)
-        logger.info(f"columns in locations - {locations_df.loc[:,'latitude']}")
-        logger.info(f"columns in locations - {locations_df['latitude'].count()}")
-        
+        location_df["latitude"] =  [coordinates.get('latitude',{}) if isinstance(coordinates,dict) else None for coordinates in locations_df["coordinates"]]
+        location_df["longitude"] = [coordinates.get('longitude',{}) if isinstance(coordinates,dict) else None for coordinates in locations_df["coordinates"]]
         locations_df = locations_df.rename(columns={"id":"locations_id","name":"locations_name",})
         locations_df = locations_df.drop_duplicates(subset=["locations_id",])
         locations_df.to_csv("./all_locations_transform.csv")
